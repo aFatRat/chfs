@@ -35,8 +35,6 @@ namespace chfs
     Directory = 2,
   };
 
-  // using InodeType=u8;
-
   class Inode;
   class FileOperation;
 
@@ -96,9 +94,6 @@ namespace chfs
     // The actual number of blocks should be larger,
     // which is dynamically calculated based on the block size
 
-    // save current allocated block number
-    // u32 cur_blocks;
-
   public:
     [[maybe_unused]] block_id_t blocks[0];
 
@@ -147,12 +142,6 @@ namespace chfs
      * @param idx the place of the block ID to store
      */
     auto is_direct_block(usize idx) const -> bool { return idx < (nblocks - 1); }
-
-    // auto get_cur_blocks() const -> u32 { return cur_blocks; }
-
-    // auto set_cur_blocks(u32 new_blocks) -> void { this->cur_blocks = new_blocks; }
-
-    auto set_size(u64 size) { this->inner_attr.size = size; }
 
     /**
      * Get the maximum file size supported by the inode
