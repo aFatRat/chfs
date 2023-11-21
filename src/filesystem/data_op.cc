@@ -116,7 +116,8 @@ namespace chfs {
                 //    in the case of indirect block.
 
                 if (inode_p->is_direct_block(idx)) {
-                    inode_p->blocks[idx] = block_id;
+                    inode_p->set_block_direct(idx,block_id);
+                    // inode_p->blocks[idx] = block_id;
                 } else {
                     block_id_t indirect_block_id = inode_p->get_or_insert_indirect_block(block_allocator_).unwrap();
 //                    printf("Indirect block id:%lu\n", indirect_block_id);
@@ -133,7 +134,7 @@ namespace chfs {
 //                                (block_id >> (i * sizeof(block_id_t))) & 0xFF));
                         indirect_block[i + block_idx * sizeof(block_id_t)] = (char) (
                                 (block_id >> (i * sizeof(block_id_t))) & 0xFF);
-                    }
+                    }               
 //                    block_manager_->write_block(indirect_block_id,indirect_block.data());
                 }
 
@@ -148,7 +149,7 @@ namespace chfs {
                     // TODO: Free the direct extra block.
                     block_id_t block_id = inode_p->blocks[idx];
                     block_allocator_->deallocate(block_id);
-                    inode_p->blocks[idx] = KInvalidBlockID;
+                    inode_p->set_block_direct(idx,KInvalidBlockID);
 
 //                    UNIMPLEMENTED();
                 } else {
