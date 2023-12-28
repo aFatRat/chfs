@@ -19,7 +19,8 @@ namespace mapReduce {
     enum mr_tasktype {
         NONE = 0,
         MAP,
-        REDUCE
+        REDUCE,
+        MERGE
     };
 
     std::vector<KeyVal> Map(const std::string &content);
@@ -54,7 +55,7 @@ namespace mapReduce {
     class Coordinator {
     public:
         Coordinator(MR_CoordinatorConfig config, const std::vector<std::string> &files, int nReduce);
-        std::tuple<int, int> askTask(int);
+        std::tuple<int, int,std::string> askTask(int);
         int submitTask(int taskType, int index);
         bool Done();
 
@@ -63,6 +64,18 @@ namespace mapReduce {
         std::mutex mtx;
         bool isFinished;
         std::unique_ptr<chfs::RpcServer> rpc_server;
+
+        int n_reducer;
+        int map_assign_num;
+        int map_finish_num;
+        int reduce_assign_num;
+        int reduce_finish_num;
+        bool map_finished;
+        bool reduce_finished;
+        bool merge_assigned;
+        bool merge_finished;
+        std::vector<bool> map_status;
+        std::vector<bool> reduce_status;
     };
 
     class Worker {
@@ -81,5 +94,7 @@ namespace mapReduce {
         std::shared_ptr<chfs::ChfsClient> chfs_client;
         std::unique_ptr<std::thread> work_thread;
         bool shouldStop = false;
+
+        void merge();
     };
 }

@@ -7,6 +7,47 @@
 #include "map_reduce/protocol.h"
 
 namespace mapReduce{
+  std::vector<char> to_vector(const std::string& str){
+    std::vector<char> ret;
+    for(auto c:str){
+      ret.push_back(c);
+    }
+    ret.push_back('\0');
+    ret.push_back(' ');
+    return ret;
+  }
+
+  template<typename T>
+  auto check(std::vector<T> vector, T element) -> bool {
+    for (auto itr = vector.begin(); itr != vector.end(); itr++) {
+      if (*itr == element) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // currently not apply delimiters
+  std::vector<std::string> split(const std::string &content,const std::string &delimiters){
+    std::vector<std::string> ret;
+    std::string str=content;
+    for(char & itr : str){
+        char c=itr;
+        if(!(c>='a'&&c<='z')&&!(c>='A'&&c<='Z')){
+            itr=' ';
+        }
+    }
+
+    std::stringstream ss(str);
+    std::string word;
+    while(ss>>word){
+      ret.push_back(word);
+    }
+
+    return ret;
+  }
+
 //
 // The map function is called once for each file of input. The first
 // argument is the name of the input file, and the second is the
@@ -18,8 +59,18 @@ namespace mapReduce{
         // Your code goes here
         // Hints: split contents into an array of words.
         std::vector<KeyVal> ret;
-        return ret;
+        std::map<std::string ,int> word_quantity;
 
+        std::string delimiters="\n\t?!:;,.\"";
+        std::vector<std::string> words= split(content,delimiters);
+        for(const std::string &word:words){
+          word_quantity[word]+=1;
+        }
+        for(auto [word,quantity]:word_quantity){
+          ret.emplace_back(word,std::to_string(quantity));
+        }
+
+        return ret;
     }
 
 //
@@ -30,7 +81,12 @@ namespace mapReduce{
     std::string Reduce(const std::string &key, const std::vector<std::string> &values) {
         // Your code goes here
         // Hints: return the number of occurrences of the word.
-        std::string ret = "0";
-        return ret;
+//        std::string ret = "0";
+//        return ret;
+        int ret=0;
+        for(const auto& value:values){
+            ret+=std::stoi(value);
+        }
+        return std::to_string(ret);
     }
 }
