@@ -169,6 +169,8 @@ namespace mapReduce {
 		}
 		std::sort(kvs.begin(), kvs.end());
 		EXPECT_EQ(kvs, correctKvs) << "incorrect output";
+    std::cout<<"SEQ: "<<seq_duration<<std::endl;
+    std::cout<<"DIS: "<<duration.count()<<std::endl;
 		EXPECT_LE(static_cast<int>(duration.count()), 3 * seq_duration);
 	}
 }

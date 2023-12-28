@@ -27,7 +27,10 @@ namespace mapReduce {
             if(reduce_assign_num>=n_reducer){
                 return std::make_tuple(-1, -1,"");
             }else{
-                int files_per_reducer=(int)files.size() / n_reducer+1;
+                int files_per_reducer=(int)files.size() / n_reducer;
+                if(files_per_reducer*n_reducer<files.size()){
+                  files_per_reducer++;
+                }
                 reduce_assign_num++;
                 return std::make_tuple(reduce_assign_num,files_per_reducer,"");
             }
@@ -77,6 +80,12 @@ namespace mapReduce {
         return this->isFinished;
     }
 
+    int calculate_reduce_num(int files,int n_reduce){
+        double log= std::log(files);
+        int log_int=(int)log;
+        return std::min(log_int,n_reduce);
+    }
+
     // create a Coordinator.
     // nReduce is the number of reduce tasks to use.
     Coordinator::Coordinator(MR_CoordinatorConfig config, const std::vector<std::string> &files, int nReduce) {
@@ -84,7 +93,8 @@ namespace mapReduce {
 //        std::cout<<"FILES NUM: "+std::to_string(files.size())+"\n";
         this->isFinished = false;
         // Lab4: Your code goes here (Optional).
-        this->n_reducer=nReduce;
+//        this->n_reducer=1;
+        this->n_reducer= calculate_reduce_num(files.size(),nReduce);
         this->map_assign_num=0;
         this->map_finish_num=0;
         this->reduce_assign_num=0;
