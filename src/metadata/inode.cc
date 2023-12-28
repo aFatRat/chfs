@@ -14,7 +14,8 @@ auto Inode::write_indirect_block(std::shared_ptr<BlockManager> &bm,
     return ChfsNullResult(ErrorType::INVALID_ARG);
   }
 
-  return bm->write_block(this->blocks[this->nblocks - 1], buffer.data());
+//  return bm->write_block(this->blocks[this->nblocks - 1], buffer.data());
+    return bm->append_to_entry(this->blocks[this->nblocks - 1],buffer);
 }
 
 } // namespace chfs
