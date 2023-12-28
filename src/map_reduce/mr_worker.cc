@@ -128,13 +128,13 @@ namespace mapReduce {
 
     void Worker::merge(){
         auto output_file_inode_id=chfs_client->lookup(1,outPutFile).unwrap();
-        std::cout<<"OUTPUT_INODE_ID: "+std::to_string(output_file_inode_id)+"\n";
+//        std::cout<<"OUTPUT_INODE_ID: "+std::to_string(output_file_inode_id)+"\n";
         std::map<std::string,int> result;
 
         int current_index=0;
         while(true){
             std::string reduce_result_filename="reduce-"+std::to_string(current_index);
-            std::cout<<"MERGE READ: "+reduce_result_filename+"\n";
+//            std::cout<<"MERGE READ: "+reduce_result_filename+"\n";
             auto res=chfs_client->lookup(1,reduce_result_filename);
             if(res.is_err()){
                 std::cout<<"Read error!"<<std::endl;

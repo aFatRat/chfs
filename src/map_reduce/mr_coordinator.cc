@@ -43,28 +43,28 @@ namespace mapReduce {
         // Lab4 : Your code goes here.
         if(taskType==MAP){
             if(!map_status[index]){
-                std::cout<<"MAP "+std::to_string(index)+" FINISH\n";
+//                std::cout<<"MAP "+std::to_string(index)+" FINISH\n";
                 map_status[index]=true;
                 map_finish_num++;
             }
 
             if(map_finish_num>=files.size()){
-                std::cout<<"MAP ALL FINISH\n";
+//                std::cout<<"MAP ALL FINISH\n";
                 map_finished= true;
             }
         }else if(taskType==REDUCE){
             if(!reduce_status[index]){
-                std::cout<<"REDUCE "+std::to_string(index)+" FINISH\n";
+//                std::cout<<"REDUCE "+std::to_string(index)+" FINISH\n";
                 reduce_status[index]=true;
                 reduce_finish_num++;
             }
 
             if(reduce_finish_num>=n_reducer){
-                std::cout<<"REDUCE ALL FINISH\n";
+//                std::cout<<"REDUCE ALL FINISH\n";
                 reduce_finished= true;
             }
         }else if(taskType==MERGE){
-            std::cout<<"MERGE FINISH\n";
+//            std::cout<<"MERGE FINISH\n";
             isFinished= true;
         }
         return 0;
@@ -81,7 +81,7 @@ namespace mapReduce {
     // nReduce is the number of reduce tasks to use.
     Coordinator::Coordinator(MR_CoordinatorConfig config, const std::vector<std::string> &files, int nReduce) {
         this->files = files;
-        std::cout<<"FILES NUM: "+std::to_string(files.size())+"\n";
+//        std::cout<<"FILES NUM: "+std::to_string(files.size())+"\n";
         this->isFinished = false;
         // Lab4: Your code goes here (Optional).
         this->n_reducer=nReduce;
