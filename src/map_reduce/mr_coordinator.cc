@@ -8,38 +8,40 @@
 #include "map_reduce/protocol.h"
 
 namespace mapReduce {
-    // (task type, nfiles, filename)
+    // (task type, nfiles, filename, n_reducer)
     // -2:merge -1:sleep 0:map >=1:reduce number
-    std::tuple<int, int,std::string> Coordinator::askTask(int) {
+    TaskInfo Coordinator::askTask(int) {
         // Lab4 : Your code goes here.
         // Free to change the type of return value.
 //        std::cout<<"MAP__"+std::to_string(files.size())+"__"+std::to_string(map_assign_num)+"\n";
 //        std::cout<<"REDUCE__"+std::to_string(n_reducer)+"__"+std::to_string(reduce_assign_num)+"\n";
 
+        TaskInfo taskInfo;
+        taskInfo.n_reducer=this->n_reducer;
+
         if(!map_finished){
             if(map_assign_num>=files.size()){
-                return std::make_tuple(-1,-1,"");
+                taskInfo.tasktype=-1;
             }else{
                 int index=map_assign_num++;
-                return std::make_tuple(0,index,files[index]);
+                taskInfo.tasktype=0;
+                taskInfo.nfiles=index;
+                taskInfo.filename=files[index];
             }
         }else if(!reduce_finished){
             if(reduce_assign_num>=n_reducer){
-                return std::make_tuple(-1, -1,"");
+                taskInfo.tasktype=-1;
             }else{
-                int files_per_reducer=(int)files.size() / n_reducer;
-                if(files_per_reducer*n_reducer<files.size()){
-                  files_per_reducer++;
-                }
-                reduce_assign_num++;
-                return std::make_tuple(reduce_assign_num,files_per_reducer,"");
+                int index=reduce_assign_num++;
+                taskInfo.tasktype=index+1;
+                taskInfo.nfiles=(int)files.size();
             }
         }else if(!merge_assigned){
             merge_assigned= true;
-            return std::make_tuple(-2,0,"");
+            taskInfo.tasktype=-2;
         }
 
-        return std::make_tuple(-1, -1,"");
+        return taskInfo;
     }
 
     int Coordinator::submitTask(int taskType, int index) {
@@ -80,11 +82,11 @@ namespace mapReduce {
         return this->isFinished;
     }
 
-    int calculate_reduce_num(int files,int n_reduce){
-        double log= std::log(files);
-        int log_int=(int)log;
-        return std::min(log_int,n_reduce);
-    }
+//    int calculate_reduce_num(int files,int n_reduce){
+//        double log= std::log(files);
+//        int log_int=(int)log;
+//        return std::min(log_int,n_reduce);
+//    }
 
     // create a Coordinator.
     // nReduce is the number of reduce tasks to use.
@@ -94,7 +96,7 @@ namespace mapReduce {
         this->isFinished = false;
         // Lab4: Your code goes here (Optional).
 //        this->n_reducer=1;
-        this->n_reducer= calculate_reduce_num(files.size(),nReduce);
+        this->n_reducer= nReduce;
         this->map_assign_num=0;
         this->map_finish_num=0;
         this->reduce_assign_num=0;

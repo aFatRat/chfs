@@ -23,6 +23,27 @@ namespace mapReduce {
         MERGE
     };
 
+    struct TaskInfo{
+       TaskInfo(){
+          this->tasktype=-1;
+          this->n_reducer=0;
+          this->filename="";
+          this->nfiles=0;
+       };
+       TaskInfo(int tasktype,int nfiles,const std::string &filename, int n_reducer){
+          this->tasktype=tasktype;
+          this->nfiles=nfiles;
+          this->filename=filename;
+          this->n_reducer=n_reducer;
+       };
+       int tasktype;
+       int nfiles;
+       std::string filename;
+       int n_reducer{};
+
+        MSGPACK_DEFINE(tasktype, nfiles, filename, n_reducer)
+    };
+
     std::vector<KeyVal> Map(const std::string &content);
 
     std::string Reduce(const std::string &key, const std::vector<std::string> &values);
@@ -55,7 +76,7 @@ namespace mapReduce {
     class Coordinator {
     public:
         Coordinator(MR_CoordinatorConfig config, const std::vector<std::string> &files, int nReduce);
-        std::tuple<int, int,std::string> askTask(int);
+        TaskInfo askTask(int);
         int submitTask(int taskType, int index);
         bool Done();
 
@@ -96,5 +117,6 @@ namespace mapReduce {
         bool shouldStop = false;
 
         void merge();
+        int n_reducer;
     };
 }
